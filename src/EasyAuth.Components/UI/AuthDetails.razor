@@ -1,3 +1,34 @@
-﻿<div class="my-component">
-    This component is defined in the <strong>EasyAuth.Components</strong> library.
-</div>
+﻿@* @using System.Text.Json
+@inject HttpClient Http
+
+<h2>Auth Details</h2>
+
+@if (string.IsNullOrWhiteSpace(headers) == false)
+{
+    <h3>Headers</h3>
+    <pre>@headers</pre>
+}
+
+@if (string.IsNullOrWhiteSpace(authMe) == false)
+{
+    <h3><code>/.auth/me</code></h3>
+    <pre>@authMe</pre>
+}
+
+@code
+{
+    private string? headers;
+    private string? queries;
+    private string? body;
+    private string? authMe;
+
+    [CascadingParameter]
+    public Microsoft.AspNetCore.HttpContext? HttpContext { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.headers = JsonSerializer.Serialize(this.HttpContext!.Headers);
+        this.queries = JsonSerializer.Serialize(this.HttpContext!.Query);
+        this.authMe = await this.Http.GetStringAsync("/.auth/me");
+    }
+} *@
