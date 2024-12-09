@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: azure-easyauth-sample
+metadata:
+  template: azd-init@1.11.0
+services:
+  easyauth-containerapp:
+    project: src/EasyAuth.ContainerApp
+    host: containerapp
+    language: dotnet
+    docker:
+      path: ../../Dockerfile.containerapp
+      context: ../../
+      remoteBuild: true
+  # easyauth-swaapp:
+  #   project: src/EasyAuth.SwaApp
+  #   host: staticwebapp
+  #   language: dotnet
+  easyauth-webapp:
+    project: src/EasyAuth.WebApp
+    host: appservice
+    language: dotnet
