@@ -13,13 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyAuth.WebApp", "src\Easy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyAuth.Components", "src\EasyAuth.Components\EasyAuth.Components.csproj", "{0CDA4CFC-514A-4F52-BBFA-7A0B4100D132}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyAuth.FunctionApp", "src\EasyAuth.FunctionApp\EasyAuth.FunctionApp.csproj", "{560AC983-7BF0-499D-B2B8-15C4B74633A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F2AACAFC-9022-4D1C-9B3F-F05D9D4DCCB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -38,11 +37,19 @@ Global
 		{0CDA4CFC-514A-4F52-BBFA-7A0B4100D132}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CDA4CFC-514A-4F52-BBFA-7A0B4100D132}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CDA4CFC-514A-4F52-BBFA-7A0B4100D132}.Release|Any CPU.Build.0 = Release|Any CPU
+		{560AC983-7BF0-499D-B2B8-15C4B74633A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{560AC983-7BF0-499D-B2B8-15C4B74633A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{560AC983-7BF0-499D-B2B8-15C4B74633A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{560AC983-7BF0-499D-B2B8-15C4B74633A3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F2AACAFC-9022-4D1C-9B3F-F05D9D4DCCB6} = {09E22D62-2D4D-40BE-94ED-90EB8528124A}
 		{7EE7A101-712C-45B6-8501-05E7FECEDA8A} = {09E22D62-2D4D-40BE-94ED-90EB8528124A}
 		{EDBFCBE0-3F6B-4DA4-84B0-0218CC4261C2} = {09E22D62-2D4D-40BE-94ED-90EB8528124A}
 		{0CDA4CFC-514A-4F52-BBFA-7A0B4100D132} = {09E22D62-2D4D-40BE-94ED-90EB8528124A}
+		{560AC983-7BF0-499D-B2B8-15C4B74633A3} = {09E22D62-2D4D-40BE-94ED-90EB8528124A}
 	EndGlobalSection
 EndGlobal

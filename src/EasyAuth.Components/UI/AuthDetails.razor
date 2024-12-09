@@ -1,5 +1,6 @@
-﻿@* @using System.Text.Json
-@inject HttpClient Http
+﻿@using System.Text.Json
+@using EasyAuth.Components.Services
+@inject IRequestService Service
 
 <h2>Auth Details</h2>
 
@@ -7,6 +8,24 @@
 {
     <h3>Headers</h3>
     <pre>@headers</pre>
+}
+
+@if (string.IsNullOrWhiteSpace(queries) == false)
+{
+    <h3>Queries</h3>
+    <pre>@queries</pre>
+}
+
+@if (string.IsNullOrWhiteSpace(cookies) == false)
+{
+    <h3>Cookies</h3>
+    <pre>@cookies</pre>
+})
+
+@if (string.IsNullOrWhiteSpace(body) == false)
+{
+    <h3>Body</h3>
+    <pre>@body</pre>
 }
 
 @if (string.IsNullOrWhiteSpace(authMe) == false)
@@ -19,16 +38,16 @@
 {
     private string? headers;
     private string? queries;
+    private string? cookies;
     private string? body;
     private string? authMe;
 
-    [CascadingParameter]
-    public Microsoft.AspNetCore.HttpContext? HttpContext { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
-        this.headers = JsonSerializer.Serialize(this.HttpContext!.Headers);
-        this.queries = JsonSerializer.Serialize(this.HttpContext!.Query);
-        this.authMe = await this.Http.GetStringAsync("/.auth/me");
+        this.headers = await this.Service.GetHeaders();
+        this.queries = await this.Service.GetQueries();
+        this.cookies = await this.Service.GetCookies();
+        this.body = await this.Service.GetPayload();
+        this.authMe = await this.Service.GetAuthMe();
     }
-} *@
+}

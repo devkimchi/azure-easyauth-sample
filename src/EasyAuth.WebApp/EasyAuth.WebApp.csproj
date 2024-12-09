@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EasyAuth.Components\EasyAuth.Components.csproj" />
+  </ItemGroup>
+
 </Project>
