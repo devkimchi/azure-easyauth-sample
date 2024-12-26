@@ -49,14 +49,22 @@ public class RequestService(IHttpContextAccessor accessor, HttpClient http) : IR
 
     public async Task<string> GetAuthMe()
     {
+        var context = accessor.HttpContext;
+        var request = context!.Request;
+        var headers = request.Headers;
         var authMe = default(string);
         try
         {
-            authMe = await http.GetStringAsync("/.auth/me");
+            http.DefaultRequestHeaders.Clear();
+            foreach (var header in headers)
+            {
+                http.DefaultRequestHeaders.Add(header.Key, header.Value.ToArray());
+            }
+            authMe = JsonSerializer.Serialize(await http.GetFromJsonAsync<object>("/.auth/me"), options);
         }
-        catch
+        catch (Exception ex)
         {
-            authMe = "Not authenticated";
+            authMe = ex.Message;
         }
 
         return authMe;

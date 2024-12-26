@@ -56,9 +56,11 @@ jobs:
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Provision Infrastructure
+        if: ${{ env.AZURE_ENV_NAME != '' }}
         run: azd provision --no-prompt
         env:
           AZD_INITIAL_ENVIRONMENT_CONFIG: ${{ secrets.AZD_INITIAL_ENVIRONMENT_CONFIG }}
 
       - name: Deploy Application
+        if: ${{ env.AZURE_ENV_NAME != '' }}
         run: azd deploy --no-prompt
