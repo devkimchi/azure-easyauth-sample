@@ -3,12 +3,14 @@
   "configurations": {
     "azure-easyauth-sample": {
       "appLocation": "src/EasyAuth.SwaApp",
-      "apiLocation": "src/EasyAuth.FunctionApp/bin/Release/net8.0/publish",
+      "apiLocation": "src/EasyAuth.FunctionApp/bin/Release/net9.0",
       "outputLocation": "bin/wwwroot",
+      "apiLanguage": "dotnetisolated",
+      "apiVersion": "9.0",
       "appBuildCommand": "dotnet publish -c Release -o bin",
       "apiBuildCommand": "dotnet publish -c Release",
       "run": "dotnet watch run",
-      "appDevserverUrl": "http://localhost:5000"
+      "appDevserverUrl": "http://localhost:8080"
     }
   }
 }
