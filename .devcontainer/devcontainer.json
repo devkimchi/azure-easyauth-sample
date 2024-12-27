@@ -9,7 +9,7 @@
       "version": "9.0"
     },
     "ghcr.io/devcontainers/features/azure-cli:latest": {
-      "extensions": "account,containerapp,deploy-to-azure,functionapp,staticwebapp,subscription,webapp"
+      "extensions": "account,authV2,containerapp,deploy-to-azure,functionapp,staticwebapp,subscription,webapp"
     },
     "ghcr.io/devcontainers/features/github-cli:latest": {},
     "ghcr.io/devcontainers/features/docker-in-docker": {},

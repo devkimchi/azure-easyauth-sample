@@ -3,7 +3,7 @@
   "configurations": {
     "azure-easyauth-sample": {
       "appLocation": "src/EasyAuth.SwaApp",
-      "apiLocation": "src/EasyAuth.FunctionApp/bin/Release/net9.0",
+      "apiLocation": "src/EasyAuth.FunctionApp",
       "outputLocation": "bin/wwwroot",
       "apiLanguage": "dotnetisolated",
       "apiVersion": "9.0",

@@ -14,13 +14,18 @@ param easyauthContainerappExists bool
 param easyauthContainerappDefinition object
 
 @allowed([
-    'centralus'
-    'eastasia'
-    'eastus2'
-    'westeurope'
-    'westus2'
-  ])
-  param sttappLocation string
+  'centralus'
+  'eastasia'
+  'eastus2'
+  'westeurope'
+  'westus2'
+])
+@metadata({
+  azd: {
+    type: 'location'
+  }
+})
+param sttappLocation string
   
 @description('Id of the user or app to assign application roles')
 param principalId string
@@ -53,10 +58,22 @@ module resources 'resources.bicep' = {
     sttappLocation: sttappLocation
   }
 }
+
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = resources.outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT
 output AZURE_KEY_VAULT_ENDPOINT string = resources.outputs.AZURE_KEY_VAULT_ENDPOINT
 output AZURE_KEY_VAULT_NAME string = resources.outputs.AZURE_KEY_VAULT_NAME
+
+output AZURE_STORAGE_ACCOUNT_NAME string = resources.outputs.AZURE_STORAGE_ACCOUNT_NAME
+output AZURE_STORAGE_ACCOUNT_ENDPOINT string = resources.outputs.AZURE_STORAGE_ACCOUNT_ENDPOINT
+
+output AZURE_RESOURCE_EASYAUTH_WEBAPP_ID string = resources.outputs.AZURE_RESOURCE_EASYAUTH_WEBAPP_ID
 output AZURE_RESOURCE_EASYAUTH_CONTAINERAPP_ID string = resources.outputs.AZURE_RESOURCE_EASYAUTH_CONTAINERAPP_ID
 output AZURE_RESOURCE_EASYAUTH_STATICAPP_ID string = resources.outputs.AZURE_RESOURCE_EASYAUTH_STATICAPP_ID
-output AZURE_RESOURCE_EASYAUTH_WEBAPP_ID string = resources.outputs.AZURE_RESOURCE_EASYAUTH_WEBAPP_ID
+
+output AZURE_RESOURCE_EASYAUTH_WEBAPP_NAME string = resources.outputs.AZURE_RESOURCE_EASYAUTH_WEBAPP_NAME
+output AZURE_RESOURCE_EASYAUTH_CONTAINERAPP_NAME string = resources.outputs.AZURE_RESOURCE_EASYAUTH_CONTAINERAPP_NAME
 output AZURE_RESOURCE_EASYAUTH_STATICAPP_NAME string = resources.outputs.AZURE_RESOURCE_EASYAUTH_STATICAPP_NAME
+
+output AZURE_RESOURCE_EASYAUTH_WEBAPP_URL string = resources.outputs.AZURE_RESOURCE_EASYAUTH_WEBAPP_URL
+output AZURE_RESOURCE_EASYAUTH_CONTAINERAPP_URL string = resources.outputs.AZURE_RESOURCE_EASYAUTH_CONTAINERAPP_URL
+output AZURE_RESOURCE_EASYAUTH_STATICAPP_URL string = resources.outputs.AZURE_RESOURCE_EASYAUTH_STATICAPP_URL
