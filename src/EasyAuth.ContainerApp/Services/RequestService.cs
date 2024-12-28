@@ -69,4 +69,23 @@ public class RequestService(IHttpContextAccessor accessor, HttpClient http) : IR
 
         return authMe;
     }
+
+    public async Task<string> GetClientPrincipal()
+    {
+        var context = accessor.HttpContext;
+        var request = context!.Request;
+        var headers = request.Headers;
+
+        var encoded = headers["X-MS-CLIENT-PRINCIPAL"];
+        if (string.IsNullOrWhiteSpace(encoded))
+        {
+            return "No client principal found";
+        }
+
+        var decoded = Convert.FromBase64String(encoded);
+        using var stream = new MemoryStream(decoded);
+        var clientPrincipal = JsonSerializer.Serialize(await JsonSerializer.DeserializeAsync<object>(stream), options);
+
+        return clientPrincipal;
+    }
 }

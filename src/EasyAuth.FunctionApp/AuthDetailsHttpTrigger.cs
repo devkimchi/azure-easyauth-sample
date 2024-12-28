@@ -56,4 +56,20 @@ public class AuthDetailsHttpTrigger
 
         return await Task.FromResult(new OkObjectResult(body));
     }
+
+    [Function("GetClientPrincipal")]
+    public async Task<IActionResult> GetClientPrincipal([HttpTrigger(AuthorizationLevel.Anonymous, "GET", Route = "client-principal")] HttpRequest req)
+    {
+        var encoded = req.Headers["X-MS-CLIENT-PRINCIPAL"];
+        if (string.IsNullOrWhiteSpace(encoded))
+        {
+            return new OkObjectResult("No client principal found");
+        }
+
+        var decoded = Convert.FromBase64String(encoded);
+        using var stream = new MemoryStream(decoded);
+        var clientPrincipal = JsonSerializer.Serialize(await JsonSerializer.DeserializeAsync<object>(stream), options);
+
+        return new OkObjectResult(clientPrincipal);
+    }
 }
