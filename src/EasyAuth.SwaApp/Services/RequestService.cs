@@ -55,4 +55,11 @@ public class RequestService(HttpClient http) : IRequestService
 
         return authMe;
     }
+
+    public async Task<string> GetClientPrincipal()
+    {
+        var clientPrincipal = await http.GetStringAsync("/api/client-principal").ConfigureAwait(false);
+
+        return clientPrincipal;
+    }
 }

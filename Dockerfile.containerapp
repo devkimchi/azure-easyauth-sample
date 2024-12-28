@@ -7,7 +7,9 @@ COPY ./src/EasyAuth.Components /source/EasyAuth.Components
 
 WORKDIR /source/EasyAuth.ContainerApp
 
-RUN dotnet publish -c Release -o /app
+ARG TARGETARCH=amd64
+
+RUN dotnet publish -a ${TARGETARCH/amd64/x64} -c Release -o /app
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
 

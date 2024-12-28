@@ -35,14 +35,36 @@ module monitoring 'br/public:avm/ptn/azd/monitoring:0.1.0' = {
   }
 }
 
+// Storage account
+module storageAccount 'br/public:avm/res/storage/storage-account:0.15.0' = {
+  name: 'storageAccount'
+  params: {
+    name: '${abbrs.storageStorageAccounts}${resourceToken}'
+    kind: 'StorageV2'
+    location: location
+    tags: tags
+    skuName: 'Standard_LRS'
+    allowBlobPublicAccess: false
+    blobServices: {
+      containers: [
+        {
+          name: 'token-store'
+          publicAccess: 'None'
+        }
+      ]
+    }
+  }
+}
+
 // Container registry
-module containerRegistry 'br/public:avm/res/container-registry/registry:0.1.1' = {
+module containerRegistry 'br/public:avm/res/container-registry/registry:0.6.0' = {
   name: 'registry'
   params: {
     name: '${abbrs.containerRegistryRegistries}${resourceToken}'
     location: location
     acrAdminUserEnabled: true
     tags: tags
+    exportPolicyStatus: 'enabled'
     publicNetworkAccess: 'Enabled'
     roleAssignments:[
       {
@@ -55,7 +77,7 @@ module containerRegistry 'br/public:avm/res/container-registry/registry:0.1.1' =
 }
 
 // Container apps environment
-module containerAppsEnvironment 'br/public:avm/res/app/managed-environment:0.4.5' = {
+module containerAppsEnvironment 'br/public:avm/res/app/managed-environment:0.8.1' = {
   name: 'container-apps-environment'
   params: {
     logAnalyticsWorkspaceResourceId: monitoring.outputs.logAnalyticsWorkspaceResourceId
@@ -65,7 +87,7 @@ module containerAppsEnvironment 'br/public:avm/res/app/managed-environment:0.4.5
   }
 }
 
-module easyauthContainerappIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.2.1' = {
+module easyauthContainerappIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0' = {
   name: 'easyauthContainerappidentity'
   params: {
     name: '${abbrs.managedIdentityUserAssignedIdentities}easyauthContainerapp-${resourceToken}'
@@ -92,7 +114,7 @@ var easyauthContainerappEnv = map(filter(easyauthContainerappAppSettingsArray, i
   value: i.value
 })
 
-module easyauthContainerapp 'br/public:avm/res/app/container-app:0.8.0' = {
+module easyauthContainerapp 'br/public:avm/res/app/container-app:0.11.0' = {
   name: 'easyauthContainerapp'
   params: {
     name: 'easyauth-containerapp'
@@ -100,7 +122,7 @@ module easyauthContainerapp 'br/public:avm/res/app/container-app:0.8.0' = {
     scaleMinReplicas: 1
     scaleMaxReplicas: 10
     secrets: {
-      secureList:  union([
+      secureList: union([
       ],
       map(easyauthContainerappSecrets, secret => {
         name: secret.secretRef
@@ -153,7 +175,7 @@ module easyauthContainerapp 'br/public:avm/res/app/container-app:0.8.0' = {
 }
 
 // Create App Service Plan
-module easyauthWebappServerfarm 'br/public:avm/res/web/serverfarm:0.3.0' = {
+module easyauthWebappServerfarm 'br/public:avm/res/web/serverfarm:0.4.0' = {
   name: 'easyauthWebapp-serverfarm'
   params: {
     name: '${abbrs.webServerFarms}${resourceToken}'
@@ -166,7 +188,7 @@ module easyauthWebappServerfarm 'br/public:avm/res/web/serverfarm:0.3.0' = {
 }
 
 // Create Web App
-module easyauthWebapp 'br/public:avm/res/web/site:0.12.0' = {
+module easyauthWebapp 'br/public:avm/res/web/site:0.12.1' = {
   name: 'easyauthWebapp'
   params: {
     name: '${abbrs.webSitesAppService}${resourceToken}'
@@ -186,6 +208,23 @@ module easyauthWebapp 'br/public:avm/res/web/site:0.12.0' = {
       alwaysOn: true
       minTlsVersion: '1.2'
     }
+    authSettingV2Configuration: {
+      globalValidation: {
+        unauthenticatedClientAction: 'AllowAnonymous'
+        redirectToProvider: 'AzureActiveDirectory'
+      }
+      httpSettings: {
+        requireHttps: true
+      }
+      login: {
+        tokenStore: {
+          enabled: true
+        }
+      }
+      platform: {
+        enabled: true
+      }
+    }
     basicPublishingCredentialsPolicies: [
       {
         name: 'scm'
@@ -200,7 +239,7 @@ module easyauthWebapp 'br/public:avm/res/web/site:0.12.0' = {
 }
 
 // Create a Static Web App
-module easyauthSwaapp 'br/public:avm/res/web/static-site:0.6.0' = {
+module easyauthSwaapp 'br/public:avm/res/web/static-site:0.6.1' = {
   name: 'easyauthSwaapp'
   params: {
     name: '${abbrs.webStaticSites}${resourceToken}'
@@ -210,7 +249,7 @@ module easyauthSwaapp 'br/public:avm/res/web/static-site:0.6.0' = {
 }
 
 // Create a keyvault to store secrets
-module keyVault 'br/public:avm/res/key-vault/vault:0.6.1' = {
+module keyVault 'br/public:avm/res/key-vault/vault:0.11.1' = {
   name: 'keyvault'
   params: {
     name: '${abbrs.keyVaultVaults}${resourceToken}'
@@ -239,7 +278,18 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.6.1' = {
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
 output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.uri
 output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
+
+output AZURE_STORAGE_ACCOUNT_NAME string = storageAccount.outputs.name
+output AZURE_STORAGE_ACCOUNT_ENDPOINT string = storageAccount.outputs.primaryBlobEndpoint
+
+output AZURE_RESOURCE_EASYAUTH_WEBAPP_ID string = easyauthWebapp.outputs.resourceId
 output AZURE_RESOURCE_EASYAUTH_CONTAINERAPP_ID string = easyauthContainerapp.outputs.resourceId
 output AZURE_RESOURCE_EASYAUTH_STATICAPP_ID string = easyauthSwaapp.outputs.resourceId
-output AZURE_RESOURCE_EASYAUTH_WEBAPP_ID string = easyauthWebapp.outputs.resourceId
+
+output AZURE_RESOURCE_EASYAUTH_WEBAPP_NAME string = easyauthWebapp.outputs.name
+output AZURE_RESOURCE_EASYAUTH_CONTAINERAPP_NAME string = easyauthContainerapp.outputs.name
 output AZURE_RESOURCE_EASYAUTH_STATICAPP_NAME string = easyauthSwaapp.outputs.name
+
+output AZURE_RESOURCE_EASYAUTH_WEBAPP_URL string = 'https://${easyauthWebapp.outputs.defaultHostname}'
+output AZURE_RESOURCE_EASYAUTH_CONTAINERAPP_URL string = 'https://${easyauthContainerapp.outputs.fqdn}'
+output AZURE_RESOURCE_EASYAUTH_STATICAPP_URL string = 'https://${easyauthSwaapp.outputs.defaultHostname}'

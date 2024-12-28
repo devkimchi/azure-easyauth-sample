@@ -34,6 +34,12 @@
     <pre>@authMe</pre>
 }
 
+@if (string.IsNullOrWhiteSpace(clientPrincipal) == false)
+{
+    <h3><code>HEADER: X-MS-CLIENT-PRINCIPAL</code></h3>
+    <pre>@clientPrincipal</pre>
+}
+
 @code
 {
     private string? headers;
@@ -41,6 +47,7 @@
     private string? cookies;
     private string? body;
     private string? authMe;
+    private string? clientPrincipal;
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,5 +56,6 @@
         this.cookies = await this.Service.GetCookies();
         this.body = await this.Service.GetPayload();
         this.authMe = await this.Service.GetAuthMe();
+        this.clientPrincipal = await this.Service.GetClientPrincipal();
     }
 }

@@ -11,4 +11,6 @@ public interface IRequestService
     Task<string> GetPayload();
 
     Task<string> GetAuthMe();
+
+    Task<string> GetClientPrincipal();
 }
