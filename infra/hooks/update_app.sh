@@ -48,7 +48,7 @@ if [[ -z "$GITHUB_WORKSPACE" ]]; then
 
     # Generate a SAS URL for the token store
     accountKey=$(az storage account keys list -g "$RESOURCE_GROUP" -n "$STORAGE_NAME" --query "[0].value" -o tsv)
-    expiry=$(date -d "+6 months" +%Y-%m-%d)
+    expiry=$(date $([[ "$OSTYPE" == "darwin"* ]] && echo "-v +6m" || echo "-d '+6 months'") +%Y-%m-%d)
     sasToken=$(az storage account generate-sas --account-name "$STORAGE_NAME" --account-key "$accountKey" --expiry "$expiry" --https-only --permissions acuw --resource-types co --services bfqt -o tsv)
     sasUrl="$STORAGE_URL?$sasToken"
 
