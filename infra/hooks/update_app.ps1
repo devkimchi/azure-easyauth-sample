@@ -9,7 +9,7 @@
 $REPOSITORY_ROOT = "$(Split-Path $MyInvocation.MyCommand.Path)/../.."
 
 # Load the azd environment variables
-& "$REPOSITORY_ROOT/infra/hooks/load_azd_env.ps1" -ShowMessage
+& "$REPOSITORY_ROOT/infra/hooks/load_azd_env.ps1"
 
 if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
     # The GITHUB_WORKSPACE is not set, meaning this is not running in a GitHub Action

@@ -1,21 +1,43 @@
-# Loads the azd .env file into the current environment
-# It does the following:
-# 1. Loads the azd .env file from the current environment
+#!/bin/bash
 
-Param(
-    [switch]
-    [Parameter(Mandatory=$false)]
-    $ShowMessage
-)
+set -e
 
-if ($ShowMessage) {
-    Write-Host "Loading azd .env file from current environment" -ForegroundColor Cyan
-}
+SHOW_MESSAGE=false
 
-foreach ($line in (& azd env get-values)) {
-    if ($line -match "([^=]+)=(.*)") {
-        $key = $matches[1]
-        $value = $matches[2] -replace '^"|"$'
-        [Environment]::SetEnvironmentVariable($key, $value)
-    }
-}
+if [[ $# -eq 0 ]]; then
+    SHOW_MESSAGE=false
+fi
+
+while [[ "$1" != "" ]]; do
+    case $1 in
+    -m | --show-message)
+        SHOW_MESSAGE=true
+        ;;
+
+    *)
+        usage
+        exit 1
+        ;;
+    esac
+
+    shift
+done
+
+if [[ $SHOW_MESSAGE == true ]]; then
+    echo -e "\033[0;36mLoading azd .env file from current environment...\033[0m"
+fi
+
+# while IFS='=' read -r key value; do
+#     value=$(echo "$value" | sed 's/^"//' | sed 's/"$//')
+#     export "$key=$value"
+# done <<EOF
+# $(azd env get-values)
+# EOF
+
+while IFS= read -r line; do
+    if [[ $line =~ ^([^=]+)=(.*)$ ]]; then
+        key="${BASH_REMATCH[1]}"
+        value="${BASH_REMATCH[2]//\"}"
+        export "$key"="$value"
+    fi
+done < <(azd env get-values)
