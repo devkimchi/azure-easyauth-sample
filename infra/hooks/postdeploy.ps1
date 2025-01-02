@@ -1,4 +1,4 @@
-# Runs the post-deploy script after the environment is provisioned
+# Runs the post-deploy script after the apps are deployed
 # It does the following:
 # 1. Loads the azd environment variables
 # 2. Logs in to the Azure CLI if not running in a GitHub Action
