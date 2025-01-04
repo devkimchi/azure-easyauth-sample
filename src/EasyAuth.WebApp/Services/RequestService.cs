@@ -1,5 +1,6 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
+using EasyAuth.Components.Models;
 using EasyAuth.Components.Services;
 
 namespace EasyAuth.WebApp.Services;
@@ -82,10 +83,9 @@ public class RequestService(IHttpContextAccessor accessor, HttpClient http) : IR
             return "No client principal found";
         }
 
-        var decoded = Convert.FromBase64String(encoded);
-        using var stream = new MemoryStream(decoded);
-        var clientPrincipal = JsonSerializer.Serialize(await JsonSerializer.DeserializeAsync<object>(stream), options);
+        var principal = await MsClientPrincipal.ParseMsClientPrincipal(encoded!).ConfigureAwait(false);
+        var serialised = JsonSerializer.Serialize(principal, options);
 
-        return clientPrincipal;
+        return serialised;
     }
 }

@@ -31,12 +31,6 @@ This provides sample [Blazor](https://learn.microsoft.com/aspnet/core/blazor/) a
     dotnet restore && dotnet build
     ```
 
-1. Create artifacts for each app
-
-    ```bash
-    dotnet publish -c Release
-    ```
-
 1. Login to Azure.
 
     ```bash
