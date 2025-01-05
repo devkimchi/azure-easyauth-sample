@@ -1,7 +1,7 @@
 using System.Text.Json;
 
-using EasyAuth.Components.Models;
 using EasyAuth.Components.Services;
+using EasyAuth.Handlers;
 
 namespace EasyAuth.ContainerApp.Services;
 

@@ -1,4 +1,5 @@
 using EasyAuth.Components.Services;
+using EasyAuth.Handlers;
 using EasyAuth.WebApp.Components;
 using EasyAuth.WebApp.Services;
 
@@ -20,6 +21,10 @@ builder.Services.AddHttpClient<IRequestService, RequestService>((sp, client) =>
     client.BaseAddress = new Uri(baseUrl);
 });
 
+builder.Services.AddAuthentication(EasyAuthAuthenticationHandler.EASY_AUTH_SCHEME_NAME)
+                .AddAzureEasyAuthHandler();
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -38,5 +43,8 @@ app.MapStaticAssets();
 
 app.MapRazorComponents<App>()
    .AddInteractiveServerRenderMode();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();

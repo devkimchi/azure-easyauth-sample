@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace EasyAuth.Components.Models;
+namespace EasyAuth.Handlers;
 
 public class MsClientPrincipalClaim
 {
