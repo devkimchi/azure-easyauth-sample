@@ -73,7 +73,7 @@ This provides sample [Blazor](https://learn.microsoft.com/aspnet/core/blazor/) a
 
 ## Known Limitations of Azure EasyAuth
 
-Azure EasyAuth is supposed to protect your entire app, not for specific pages. Therefore, if you want to protect certain pages of your app, you have to implement the authentication/authorisation logic by yourself.
+Azure EasyAuth is supposed to protect your entire app, not for specific pages. Therefore, if you want to protect certain pages of your app, you have to implement a custom authentication/authorisation logic by yourself. In this sample app, the [`EasyAuth.Handlers`](./src/EasyAuth.Handlers/) project is the one.
 
 ## Clean Up
 
