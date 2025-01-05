@@ -202,6 +202,10 @@ module easyauthWebapp 'br/public:avm/res/web/site:0.12.1' = {
           name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
           value: 'false'
         }
+        {
+          name: 'USE_AUTH_DETAILS'
+          value: 'false'
+        }
       ]
       ftpsState: 'FtpsOnly'
       linuxFxVersion: 'DOTNETCORE|9.0'

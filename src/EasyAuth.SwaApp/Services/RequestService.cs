@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 
 using EasyAuth.Components.Services;
 
@@ -48,9 +48,9 @@ public class RequestService(HttpClient http) : IRequestService
         {
             authMe = await http.GetStringAsync("/.auth/me");
         }
-        catch
+        catch (Exception ex)
         {
-            authMe = "Not authenticated";
+            authMe = ex.Message;
         }
 
         return authMe;

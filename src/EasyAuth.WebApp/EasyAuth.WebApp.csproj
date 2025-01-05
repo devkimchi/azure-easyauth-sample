@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EasyAuth.Components\EasyAuth.Components.csproj" />
+    <ProjectReference Include="..\EasyAuth.Handlers\EasyAuth.Handlers.csproj" />
   </ItemGroup>
 
 </Project>

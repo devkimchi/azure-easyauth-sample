@@ -66,7 +66,7 @@ public class AuthDetailsHttpTrigger
             return new OkObjectResult("No client principal found");
         }
 
-        var decoded = Convert.FromBase64String(encoded);
+        var decoded = Convert.FromBase64String(encoded!);
         using var stream = new MemoryStream(decoded);
         var clientPrincipal = JsonSerializer.Serialize(await JsonSerializer.DeserializeAsync<object>(stream), options);
 

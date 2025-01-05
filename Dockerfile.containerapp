@@ -4,6 +4,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 
 COPY ./src/EasyAuth.ContainerApp /source/EasyAuth.ContainerApp
 COPY ./src/EasyAuth.Components /source/EasyAuth.Components
+COPY ./src/EasyAuth.Handlers /source/EasyAuth.Handlers
 
 WORKDIR /source/EasyAuth.ContainerApp
 

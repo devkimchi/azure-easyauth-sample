@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject IConfiguration Config
 
 <PageTitle>Home</PageTitle>
 
@@ -6,4 +7,19 @@
 
 Welcome to your new app.
 
-<AuthDetails @rendermode="RenderMode.InteractiveServer" />
+@if (useAuthDetails == true)
+{
+    <AuthDetails @rendermode="RenderMode.InteractiveServer" />
+}
+
+@code
+{
+    private bool useAuthDetails;
+
+    protected override async Task OnInitializedAsync()
+    {
+        useAuthDetails = bool.TryParse(Config["USE_AUTH_DETAILS"], out var result) && result;
+
+        await Task.CompletedTask;
+    }
+}
