@@ -204,7 +204,7 @@ module easyauthWebapp 'br/public:avm/res/web/site:0.12.1' = {
         }
         {
           name: 'USE_AUTH_DETAILS'
-          value: 'false'
+          value: 'true'
         }
       ]
       ftpsState: 'FtpsOnly'
