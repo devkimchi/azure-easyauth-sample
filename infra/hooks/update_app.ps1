@@ -59,7 +59,7 @@ if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
     $__ = az containerapp update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --set-env-vars MICROSOFT_PROVIDER_AUTHENTICATION_SECRET=$clientSecret
     
     $__ = az containerapp auth microsoft update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --client-id $CLIENT_ID --client-secret $clientSecret --tenant-id $TENANT_ID -y
-    $__ = az containerapp auth update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --action AllowAnonymous --redirect-provider AzureActiveDirectory --require-https true --token-store true --sas-url-secret-name token-store-sas-url -y
+    $__ = az containerapp auth update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --action RedirectToLoginPage --redirect-provider AzureActiveDirectory --require-https true --token-store true --sas-url-secret-name token-store-sas-url -y
 
     $__ = az containerapp update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --set-env-vars MsGraph__TenantId="$TENANT_ID" `
                                                                                          MsGraph__ClientId="$CLIENT_ID" `
