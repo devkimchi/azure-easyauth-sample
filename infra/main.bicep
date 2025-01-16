@@ -50,6 +50,7 @@ module resources 'resources.bicep' = {
   scope: rg
   name: 'resources'
   params: {
+    environmentName: environmentName
     location: location
     tags: tags
     principalId: principalId

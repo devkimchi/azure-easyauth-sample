@@ -45,21 +45,22 @@ if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
     $clientSecret = az ad app credential reset --id $appId --display-name "default" --query "password" -o tsv
 
     # Generate a SAS URL for the token store
-    $accountKey = az storage account keys list -g $RESOURCE_GROUP -n $STORAGE_NAME --query "[0].value" -o tsv
-    $expiry = $(Get-Date).AddMonths(6).ToString("yyyy-MM-dd")
-    $sasToken = az storage account generate-sas --account-name $STORAGE_NAME --account-key $accountKey --expiry $expiry --https-only --permissions acuw --resource-types co --services bfqt -o tsv
-    $sasUrl = "$STORAGE_URL`?$sasToken"
+    # $accountKey = az storage account keys list -g $RESOURCE_GROUP -n $STORAGE_NAME --query "[0].value" -o tsv
+    # $expiry = $(Get-Date).AddMonths(6).ToString("yyyy-MM-dd")
+    # $sasToken = az storage account generate-sas --account-name $STORAGE_NAME --account-key $accountKey --expiry $expiry --https-only --permissions acuw --resource-types co --services bfqt -o tsv
+    # $sasUrl = "$STORAGE_URL`?$sasToken"
     
     # Update EasyAuth settings for Azure Container App
     Write-Host "...Updating Azure Container Apps..."
 
     $__ = az containerapp secret set -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --secrets microsoft-provider-authentication-secret=$clientSecret
     # To pass SAS URL: https://learn.microsoft.com/cli/azure/use-azure-cli-successfully-powershell#pass-parameters-containing-the-ampersand-symbol
-    $__ = az containerapp secret set -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --secrets token-store-sas-url="""$sasUrl"""
+    # $__ = az containerapp secret set -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --secrets token-store-sas-url="""$sasUrl"""
     $__ = az containerapp update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --set-env-vars MICROSOFT_PROVIDER_AUTHENTICATION_SECRET=$clientSecret
     
     $__ = az containerapp auth microsoft update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --client-id $CLIENT_ID --client-secret $clientSecret --tenant-id $TENANT_ID -y
-    $__ = az containerapp auth update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --action RedirectToLoginPage --redirect-provider AzureActiveDirectory --require-https true --token-store true --sas-url-secret-name token-store-sas-url -y
+    # $__ = az containerapp auth update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --action RedirectToLoginPage --redirect-provider AzureActiveDirectory --require-https true --token-store true --sas-url-secret-name token-store-sas-url -y
+    $__ = az containerapp auth update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --action RedirectToLoginPage --redirect-provider AzureActiveDirectory --require-https true -y
 
     $__ = az containerapp update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --set-env-vars MsGraph__TenantId="$TENANT_ID" `
                                                                                          MsGraph__ClientId="$CLIENT_ID" `

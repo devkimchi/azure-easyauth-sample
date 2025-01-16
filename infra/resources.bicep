@@ -1,3 +1,6 @@
+@description('Name of the environment that can be used as part of naming resource convention')
+param environmentName string
+
 @description('The location used for all deployed resources')
 param location string = resourceGroup().location
 
@@ -160,7 +163,9 @@ module easyauthContainerapp 'br/public:avm/res/app/container-app:0.11.0' = {
     ]
     managedIdentities:{
       systemAssigned: false
-      userAssignedResourceIds: [easyauthContainerappIdentity.outputs.resourceId]
+      userAssignedResourceIds: [
+        easyauthContainerappIdentity.outputs.resourceId
+      ]
     }
     registries:[
       {
@@ -171,6 +176,16 @@ module easyauthContainerapp 'br/public:avm/res/app/container-app:0.11.0' = {
     environmentResourceId: containerAppsEnvironment.outputs.resourceId
     location: location
     tags: union(tags, { 'azd-service-name': 'easyauth-containerapp' })
+  }
+}
+
+module easyauthContainerappAuthConfig './modules/container-apps-authconfigs.bicep' = {
+  name: 'easyauthContainerappAuthConfig'
+  params: {
+    containerAppName: easyauthContainerapp.outputs.name
+    principalId: principalId
+    managedIdentityName: easyauthContainerappIdentity.outputs.name
+    storageAccountName: storageAccount.outputs.name
   }
 }
 
@@ -187,6 +202,15 @@ module easyauthWebappServerfarm 'br/public:avm/res/web/serverfarm:0.4.0' = {
   }
 }
 
+
+module easyauthWebappIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0' = {
+  name: 'easyauthWebappidentity'
+  params: {
+    name: '${abbrs.managedIdentityUserAssignedIdentities}easyauthWebapp-${resourceToken}'
+    location: location
+  }
+}
+
 // Create Web App
 module easyauthWebapp 'br/public:avm/res/web/site:0.12.1' = {
   name: 'easyauthWebapp'
@@ -196,6 +220,12 @@ module easyauthWebapp 'br/public:avm/res/web/site:0.12.1' = {
     serverFarmResourceId: easyauthWebappServerfarm.outputs.resourceId
     location: location
     tags: union(tags, { 'azd-service-name': 'easyauth-webapp' })
+    managedIdentities: {
+      systemAssigned: false
+      userAssignedResourceIds: [
+        easyauthWebappIdentity.outputs.resourceId
+      ]
+    }
     siteConfig: {
       appSettings: [
         {
@@ -242,6 +272,19 @@ module easyauthWebapp 'br/public:avm/res/web/site:0.12.1' = {
   }
 }
 
+var issuer = '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
+module appRegistration './modules/app-registration.bicep' = {
+  name: 'appRegistration'
+  params: {
+    clientAppName: 'spn-${environmentName}'
+    issuer: issuer
+    webAppIdentityId: easyauthWebappIdentity.outputs.principalId
+    containerAppIdentityId: easyauthContainerappIdentity.outputs.principalId
+    webAppEndpoint: easyauthWebapp.outputs.defaultHostname
+    containerAppEndpoint: easyauthContainerapp.outputs.fqdn
+  }
+}
+
 // Create a Static Web App
 module easyauthSwaapp 'br/public:avm/res/web/static-site:0.6.1' = {
   name: 'easyauthSwaapp'
@@ -269,6 +312,12 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.11.1' = {
       }
       {
         objectId: easyauthContainerappIdentity.outputs.principalId
+        permissions: {
+          secrets: [ 'get', 'list' ]
+        }
+      }
+      {
+        objectId: easyauthWebappIdentity.outputs.principalId
         permissions: {
           secrets: [ 'get', 'list' ]
         }
