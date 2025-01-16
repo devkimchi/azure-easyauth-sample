@@ -1,7 +1,20 @@
 param containerAppName string
-param principalId string
 param managedIdentityName string
 param storageAccountName string
+
+@description('The client ID of the Microsoft Entra application.')
+param clientId string
+
+param openIdIssuer string
+
+@allowed([
+  'AllowAnonymous'
+  'RedirectToLoginPage'
+  'Return401'
+  'Return403'
+])
+param unauthenticatedClientAction string = 'RedirectToLoginPage'
+
 
 resource containerapp 'Microsoft.App/containerApps@2024-10-02-preview' existing = {
   name: containerAppName
@@ -19,23 +32,31 @@ resource containerappAuthConfig 'Microsoft.App/containerApps/authConfigs@2024-10
   name: 'current'
   parent: containerapp
   properties: {
-    platform: {
-      enabled: true
-    }
     globalValidation: {
-      unauthenticatedClientAction: 'RedirectToLoginPage'
+      unauthenticatedClientAction: unauthenticatedClientAction
       redirectToProvider: 'AzureActiveDirectory'
     }
-    httpSettings: {
-      requireHttps: true
+    identityProviders: {
+      azureActiveDirectory: {
+        enabled: true
+        registration: {
+          clientId: clientId
+          clientSecretSettingName: 'OVERRIDE_USE_MI_FIC_ASSERTION_CLIENTID'
+          openIdIssuer: openIdIssuer
+        }
+        validation: {
+          defaultAuthorizationPolicy: {
+            allowedApplications: []
+          }
+        }
+      }
     }
     login: {
       tokenStore: {
         enabled: true
         azureBlobStorage: {
-          clientId: principalId
-        //   managedIdentityResourceId: userAssignedIdentity.id
           blobContainerUri: '${storageAccount.properties.primaryEndpoints.blob}/token-store'
+          managedIdentityResourceId: userAssignedIdentity.id
         }
       }
     }

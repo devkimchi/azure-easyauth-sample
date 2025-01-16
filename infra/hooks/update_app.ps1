@@ -69,7 +69,7 @@ if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
     # Update EasyAuth settings for Azure App Service
     Write-Host "...Updating Azure App Service..."
 
-    $__ = az webapp auth microsoft update -g $RESOURCE_GROUP -n $WEBAPP_NAME --client-id $CLIENT_ID --client-secret $clientSecret --tenant-id $TENANT_ID -y
+    # $__ = az webapp auth microsoft update -g $RESOURCE_GROUP -n $WEBAPP_NAME --client-id $CLIENT_ID --client-secret $clientSecret --tenant-id $TENANT_ID -y
 
     $__ = az webapp config appsettings set -g $RESOURCE_GROUP -n $WEBAPP_NAME --settings MsGraph__TenantId="$TENANT_ID" `
                                                                                          MsGraph__ClientId="$CLIENT_ID" `
