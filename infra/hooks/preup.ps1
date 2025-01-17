@@ -10,4 +10,4 @@ Write-Host "Running pre-up script..."
 $REPOSITORY_ROOT = "$(Split-Path $MyInvocation.MyCommand.Path)/../.."
 
 # Register the Entra ID application in Azure
-& "$REPOSITORY_ROOT/infra/hooks/register_app.ps1"
+# & "$REPOSITORY_ROOT/infra/hooks/register_app.ps1"

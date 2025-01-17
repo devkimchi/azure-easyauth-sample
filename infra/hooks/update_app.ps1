@@ -53,14 +53,14 @@ if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
     # Update EasyAuth settings for Azure Container App
     Write-Host "...Updating Azure Container Apps..."
 
-    $__ = az containerapp secret set -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --secrets microsoft-provider-authentication-secret=$clientSecret
+    # $__ = az containerapp secret set -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --secrets microsoft-provider-authentication-secret=$clientSecret
     # To pass SAS URL: https://learn.microsoft.com/cli/azure/use-azure-cli-successfully-powershell#pass-parameters-containing-the-ampersand-symbol
     # $__ = az containerapp secret set -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --secrets token-store-sas-url="""$sasUrl"""
-    $__ = az containerapp update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --set-env-vars MICROSOFT_PROVIDER_AUTHENTICATION_SECRET=$clientSecret
+    # $__ = az containerapp update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --set-env-vars MICROSOFT_PROVIDER_AUTHENTICATION_SECRET=$clientSecret
     
-    $__ = az containerapp auth microsoft update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --client-id $CLIENT_ID --client-secret $clientSecret --tenant-id $TENANT_ID -y
+    # $__ = az containerapp auth microsoft update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --client-id $CLIENT_ID --client-secret $clientSecret --tenant-id $TENANT_ID -y
     # $__ = az containerapp auth update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --action RedirectToLoginPage --redirect-provider AzureActiveDirectory --require-https true --token-store true --sas-url-secret-name token-store-sas-url -y
-    $__ = az containerapp auth update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --action RedirectToLoginPage --redirect-provider AzureActiveDirectory --require-https true -y
+    # $__ = az containerapp auth update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --action RedirectToLoginPage --redirect-provider AzureActiveDirectory --require-https true -y
 
     $__ = az containerapp update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --set-env-vars MsGraph__TenantId="$TENANT_ID" `
                                                                                          MsGraph__ClientId="$CLIENT_ID" `
@@ -89,7 +89,7 @@ if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
     # Add identifier URIs to the app
     Write-Host "...Adding Identifier URIs..."
 
-    $__ = az ad app update --id $appId --identifier-uris "api://$appId"
+    # $__ = az ad app update --id $appId --identifier-uris "api://$appId"
 
     # Add API scopes to the app
     Write-Host "...Adding API scopes..."
@@ -103,14 +103,14 @@ if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
             requestedAccessTokenVersion = 2;
             oauth2PermissionScopes = @( $scope );
         }
-        $__ = az ad app update --id $appId --set api=$($api | ConvertTo-Json -Depth 100 -Compress | ConvertTo-Json)
+        # $__ = az ad app update --id $appId --set api=$($api | ConvertTo-Json -Depth 100 -Compress | ConvertTo-Json)
 
         # Remove all existing scopes
         $api = @{
             requestedAccessTokenVersion = 2;
             oauth2PermissionScopes = @();
         }
-        $__ = az ad app update --id $appId --set api=$($api | ConvertTo-Json -Depth 100 -Compress | ConvertTo-Json)
+        # $__ = az ad app update --id $appId --set api=$($api | ConvertTo-Json -Depth 100 -Compress | ConvertTo-Json)
     }
 
     $api = @{
@@ -126,7 +126,7 @@ if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
             }
         )
     }
-    $__ = az ad app update --id $appId --set api=$($api | ConvertTo-Json -Depth 100 -Compress | ConvertTo-Json)
+    # $__ = az ad app update --id $appId --set api=$($api | ConvertTo-Json -Depth 100 -Compress | ConvertTo-Json)
 
     # Add web settings to the app
     Write-Host "...Adding web settings..."
@@ -140,7 +140,7 @@ if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
             enableIdTokenIssuance = $true;
         }
     }
-    $__ = az ad app update --id $appId --set web=$($web | ConvertTo-Json -Depth 100 -Compress | ConvertTo-Json)
+    # $__ = az ad app update --id $appId --set web=$($web | ConvertTo-Json -Depth 100 -Compress | ConvertTo-Json)
 
     # Add API permissions to the app
     Write-Host "...Adding API permissions..."
@@ -161,7 +161,7 @@ if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
         }
     )
     $payload = @{ requiredResourceAccess = $requiredResourceAccess; } | ConvertTo-Json -Depth 100 -Compress | ConvertTo-Json
-    az rest -m PATCH --uri "https://graph.microsoft.com/v1.0/applications/$objectId" --headers Content-Type=application/json --body $payload
+    # az rest -m PATCH --uri "https://graph.microsoft.com/v1.0/applications/$objectId" --headers Content-Type=application/json --body $payload
 
     # Add optional claims to the app
     Write-Host "...Adding optinal claims..."
@@ -177,8 +177,8 @@ if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
         idToken = @( $groupClaim );
         saml2Token = @( $groupClaim );
     }
-    $__ = az ad app update --id $appId --set optionalClaims=$($optionalClaims | ConvertTo-Json -Depth 100 -Compress | ConvertTo-Json)
-    $__ = az ad app update --id $appId --set groupMembershipClaims="SecurityGroup"
+    # $__ = az ad app update --id $appId --set optionalClaims=$($optionalClaims | ConvertTo-Json -Depth 100 -Compress | ConvertTo-Json)
+    # $__ = az ad app update --id $appId --set groupMembershipClaims="SecurityGroup"
 
     Write-Host "...Done"
 } else {
