@@ -3,15 +3,15 @@ extension microsoftGraphV1
 param webAppIdentityId string
 param containerAppIdentityId string
 
-param clientAppName string
-param clientAppDisplayName string = clientAppName
+param appName string
+param appDisplayName string = appName
 
 param issuer string
 
 param webAppEndpoint string
 param containerAppEndpoint string
 
-var identifierId = guid(clientAppName)
+var identifierId = guid(appName)
 
 var groupClaim = {
   name: 'groups'
@@ -22,12 +22,12 @@ var groupClaim = {
   source: null
 }
 
-resource clientApp 'Microsoft.Graph/applications@v1.0' = {
-  uniqueName: clientAppName
-  displayName: clientAppDisplayName
-  identifierUris: [
-    'api://${identifierId}'
-  ]
+resource app 'Microsoft.Graph/applications@v1.0' = {
+  uniqueName: appName
+  displayName: appDisplayName
+//   identifierUris: [
+//     'api://${identifierId}'
+//   ]
   web: {
     redirectUris: [
       '${webAppEndpoint}/.auth/login/aad/callback'
@@ -84,8 +84,8 @@ resource clientApp 'Microsoft.Graph/applications@v1.0' = {
   }
   groupMembershipClaims: 'SecurityGroup'
 
-  resource clientAppFicWebApp 'federatedIdentityCredentials@v1.0' = {
-    name: '${clientApp.uniqueName}/fic-webapp'
+  resource appFicWebApp 'federatedIdentityCredentials@v1.0' = {
+    name: '${app.uniqueName}/fic-webapp'
     issuer: issuer
     subject: webAppIdentityId
     audiences: [
@@ -93,8 +93,8 @@ resource clientApp 'Microsoft.Graph/applications@v1.0' = {
     ]
   }
 
-  resource clientAppFicContainerApp 'federatedIdentityCredentials@v1.0' = {
-    name: '${clientApp.uniqueName}/fic-containerapp'
+  resource appFicContainerApp 'federatedIdentityCredentials@v1.0' = {
+    name: '${app.uniqueName}/fic-containerapp'
     issuer: issuer
     subject: containerAppIdentityId
     audiences: [
@@ -103,9 +103,9 @@ resource clientApp 'Microsoft.Graph/applications@v1.0' = {
   }
 }
 
-resource clientSp 'Microsoft.Graph/servicePrincipals@v1.0' = {
-  appId: clientApp.appId
+resource sp 'Microsoft.Graph/servicePrincipals@v1.0' = {
+  appId: app.appId
 }
 
-output clientAppId string = clientApp.appId
-output clientSpId string = clientSp.id
+output appId string = app.appId
+output spId string = sp.id

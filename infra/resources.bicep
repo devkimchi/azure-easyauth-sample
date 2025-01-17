@@ -250,12 +250,12 @@ var issuer = '${environment().authentication.loginEndpoint}${tenant().tenantId}/
 module appRegistration './modules/app-registration.bicep' = {
   name: 'appRegistration'
   params: {
-    clientAppName: 'spn-${environmentName}'
+    appName: 'spn-${environmentName}'
     issuer: issuer
     webAppIdentityId: easyauthWebappIdentity.outputs.principalId
     containerAppIdentityId: easyauthContainerappIdentity.outputs.principalId
-    webAppEndpoint: easyauthWebapp.outputs.defaultHostname
-    containerAppEndpoint: easyauthContainerapp.outputs.fqdn
+    webAppEndpoint: 'https://${easyauthWebapp.outputs.defaultHostname}'
+    containerAppEndpoint: 'https://${easyauthContainerapp.outputs.fqdn}'
   }
 }
 
@@ -265,7 +265,7 @@ module easyauthContainerappAuthConfig './modules/containerapps-authconfigs.bicep
     containerAppName: easyauthContainerapp.outputs.name
     managedIdentityName: easyauthContainerappIdentity.outputs.name
     storageAccountName: storageAccount.outputs.name
-    clientId: appRegistration.outputs.clientAppId
+    clientId: appRegistration.outputs.appId
     openIdIssuer: issuer
     unauthenticatedClientAction: 'RedirectToLoginPage'
   }
@@ -275,7 +275,7 @@ module easyauthWebappAuthConfig './modules/appservice-authconfigs.bicep' = {
   name: 'easyauthWebappAuthConfig'
   params: {
     appServiceName: easyauthWebapp.outputs.name
-    clientId: appRegistration.outputs.clientAppId
+    clientId: appRegistration.outputs.appId
     openIdIssuer: issuer
     unauthenticatedClientAction: 'AllowAnonymous'
   }
@@ -301,7 +301,7 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.11.1' = {
     enableRbacAuthorization: false
     accessPolicies: [
       {
-        objectId: appRegistration.outputs.clientAppId
+        objectId: appRegistration.outputs.appId
         permissions: {
           secrets: [ 'get', 'list' ]
         }
@@ -323,6 +323,8 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.11.1' = {
     ]
   }
 }
+
+output AZURE_PRINCIPAL_ID string = appRegistration.outputs.appId
 
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
 output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.uri

@@ -62,25 +62,25 @@ if ([string]::IsNullOrEmpty($env:GITHUB_WORKSPACE)) {
     # $__ = az containerapp auth update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --action RedirectToLoginPage --redirect-provider AzureActiveDirectory --require-https true --token-store true --sas-url-secret-name token-store-sas-url -y
     # $__ = az containerapp auth update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --action RedirectToLoginPage --redirect-provider AzureActiveDirectory --require-https true -y
 
-    $__ = az containerapp update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --set-env-vars MsGraph__TenantId="$TENANT_ID" `
-                                                                                         MsGraph__ClientId="$CLIENT_ID" `
-                                                                                         MsGraph__ClientSecret="$clientSecret"
+    # $__ = az containerapp update -g $RESOURCE_GROUP -n $CONTAINERAPP_NAME --set-env-vars MsGraph__TenantId="$TENANT_ID" `
+    #                                                                                      MsGraph__ClientId="$CLIENT_ID" `
+    #                                                                                      MsGraph__ClientSecret="$clientSecret"
 
     # Update EasyAuth settings for Azure App Service
     Write-Host "...Updating Azure App Service..."
 
     # $__ = az webapp auth microsoft update -g $RESOURCE_GROUP -n $WEBAPP_NAME --client-id $CLIENT_ID --client-secret $clientSecret --tenant-id $TENANT_ID -y
 
-    $__ = az webapp config appsettings set -g $RESOURCE_GROUP -n $WEBAPP_NAME --settings MsGraph__TenantId="$TENANT_ID" `
-                                                                                         MsGraph__ClientId="$CLIENT_ID" `
-                                                                                         MsGraph__ClientSecret="$clientSecret"
+    # $__ = az webapp config appsettings set -g $RESOURCE_GROUP -n $WEBAPP_NAME --settings MsGraph__TenantId="$TENANT_ID" `
+    #                                                                                      MsGraph__ClientId="$CLIENT_ID" `
+    #                                                                                      MsGraph__ClientSecret="$clientSecret"
 
     # Update EasyAuth settings for Azure Static Web Apps
     Write-Host "...Updating Azure Static Web Apps..."
 
-    $__ = az staticwebapp appsettings set -g $RESOURCE_GROUP -n $STATICAPP_NAME --setting-names MsGraph__TenantId="$TENANT_ID" `
-                                                                                                MsGraph__ClientId="$CLIENT_ID" `
-                                                                                                MsGraph__ClientSecret="$clientSecret"
+    # $__ = az staticwebapp appsettings set -g $RESOURCE_GROUP -n $STATICAPP_NAME --setting-names MsGraph__TenantId="$TENANT_ID" `
+    #                                                                                             MsGraph__ClientId="$CLIENT_ID" `
+    #                                                                                             MsGraph__ClientSecret="$clientSecret"
 
     Write-Host "...Done"
 

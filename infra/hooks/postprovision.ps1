@@ -10,4 +10,4 @@ Write-Host "Running post-provision script..."
 $REPOSITORY_ROOT = "$(Split-Path $MyInvocation.MyCommand.Path)/../.."
 
 # Update the Entra ID application
-& "$REPOSITORY_ROOT/infra/hooks/update_app.ps1"
+# & "$REPOSITORY_ROOT/infra/hooks/update_app.ps1"
