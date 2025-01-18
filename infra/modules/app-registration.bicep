@@ -25,9 +25,6 @@ var groupClaim = {
 resource app 'Microsoft.Graph/applications@v1.0' = {
   uniqueName: appName
   displayName: appDisplayName
-//   identifierUris: [
-//     'api://${identifierId}'
-//   ]
   web: {
     redirectUris: [
       '${webAppEndpoint}/.auth/login/aad/callback'

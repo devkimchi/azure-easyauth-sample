@@ -44,7 +44,6 @@ resource containerappAuthConfig 'Microsoft.App/containerApps/authConfigs@2024-10
         enabled: true
         registration: {
           clientId: clientId
-        //   clientSecretSettingName: 'OVERRIDE_USE_MI_FIC_ASSERTION_CLIENTID'
           openIdIssuer: openIdIssuer
         }
         validation: {
