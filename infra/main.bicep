@@ -50,6 +50,7 @@ module resources 'resources.bicep' = {
   scope: rg
   name: 'resources'
   params: {
+    environmentName: environmentName
     location: location
     tags: tags
     principalId: principalId
@@ -58,6 +59,8 @@ module resources 'resources.bicep' = {
     sttappLocation: sttappLocation
   }
 }
+
+output AZURE_PRINCIPAL_ID string = resources.outputs.AZURE_PRINCIPAL_ID
 
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = resources.outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT
 output AZURE_KEY_VAULT_ENDPOINT string = resources.outputs.AZURE_KEY_VAULT_ENDPOINT

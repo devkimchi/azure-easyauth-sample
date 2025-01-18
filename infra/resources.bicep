@@ -1,3 +1,6 @@
+@description('Name of the environment that can be used as part of naming resource convention')
+param environmentName string
+
 @description('The location used for all deployed resources')
 param location string = resourceGroup().location
 
@@ -44,7 +47,6 @@ module storageAccount 'br/public:avm/res/storage/storage-account:0.15.0' = {
     location: location
     tags: tags
     skuName: 'Standard_LRS'
-    allowBlobPublicAccess: false
     blobServices: {
       containers: [
         {
@@ -92,6 +94,15 @@ module easyauthContainerappIdentity 'br/public:avm/res/managed-identity/user-ass
   params: {
     name: '${abbrs.managedIdentityUserAssignedIdentities}easyauthContainerapp-${resourceToken}'
     location: location
+  }
+}
+
+module easyauthContainerappIdentityRoleAssignment './modules/role-assignment.bicep' = {
+  name: 'easyauthContainerappIdentityRoleAssignment'
+  params: {
+    managedIdentityName: easyauthContainerappIdentity.outputs.name
+    storageAccountName: storageAccount.outputs.name
+    principalType: 'ServicePrincipal'
   }
 }
 
@@ -160,7 +171,9 @@ module easyauthContainerapp 'br/public:avm/res/app/container-app:0.11.0' = {
     ]
     managedIdentities:{
       systemAssigned: false
-      userAssignedResourceIds: [easyauthContainerappIdentity.outputs.resourceId]
+      userAssignedResourceIds: [
+        easyauthContainerappIdentity.outputs.resourceId
+      ]
     }
     registries:[
       {
@@ -187,6 +200,14 @@ module easyauthWebappServerfarm 'br/public:avm/res/web/serverfarm:0.4.0' = {
   }
 }
 
+module easyauthWebappIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.0' = {
+  name: 'easyauthWebappidentity'
+  params: {
+    name: '${abbrs.managedIdentityUserAssignedIdentities}easyauthWebapp-${resourceToken}'
+    location: location
+  }
+}
+
 // Create Web App
 module easyauthWebapp 'br/public:avm/res/web/site:0.12.1' = {
   name: 'easyauthWebapp'
@@ -196,6 +217,12 @@ module easyauthWebapp 'br/public:avm/res/web/site:0.12.1' = {
     serverFarmResourceId: easyauthWebappServerfarm.outputs.resourceId
     location: location
     tags: union(tags, { 'azd-service-name': 'easyauth-webapp' })
+    managedIdentities: {
+      systemAssigned: false
+      userAssignedResourceIds: [
+        easyauthWebappIdentity.outputs.resourceId
+      ]
+    }
     siteConfig: {
       appSettings: [
         {
@@ -212,23 +239,6 @@ module easyauthWebapp 'br/public:avm/res/web/site:0.12.1' = {
       alwaysOn: true
       minTlsVersion: '1.2'
     }
-    authSettingV2Configuration: {
-      globalValidation: {
-        unauthenticatedClientAction: 'AllowAnonymous'
-        redirectToProvider: 'AzureActiveDirectory'
-      }
-      httpSettings: {
-        requireHttps: true
-      }
-      login: {
-        tokenStore: {
-          enabled: true
-        }
-      }
-      platform: {
-        enabled: true
-      }
-    }
     basicPublishingCredentialsPolicies: [
       {
         name: 'scm'
@@ -239,6 +249,43 @@ module easyauthWebapp 'br/public:avm/res/web/site:0.12.1' = {
         allow: false
       }
     ]
+  }
+}
+
+// EasyAuth
+var issuer = '${environment().authentication.loginEndpoint}${tenant().tenantId}/v2.0'
+
+module appRegistration './modules/app-registration.bicep' = {
+  name: 'appRegistration'
+  params: {
+    appName: 'spn-${environmentName}'
+    issuer: issuer
+    webAppIdentityId: easyauthWebappIdentity.outputs.principalId
+    containerAppIdentityId: easyauthContainerappIdentity.outputs.principalId
+    webAppEndpoint: 'https://${easyauthWebapp.outputs.defaultHostname}'
+    containerAppEndpoint: 'https://${easyauthContainerapp.outputs.fqdn}'
+  }
+}
+
+module easyauthContainerappAuthConfig './modules/containerapps-authconfigs.bicep' = {
+  name: 'easyauthContainerappAuthConfig'
+  params: {
+    containerAppName: easyauthContainerapp.outputs.name
+    managedIdentityName: easyauthContainerappIdentity.outputs.name
+    storageAccountName: storageAccount.outputs.name
+    clientId: appRegistration.outputs.appId
+    openIdIssuer: issuer
+    unauthenticatedClientAction: 'RedirectToLoginPage'
+  }
+}
+  
+module easyauthWebappAuthConfig './modules/appservice-authconfigs.bicep' = {
+  name: 'easyauthWebappAuthConfig'
+  params: {
+    appServiceName: easyauthWebapp.outputs.name
+    clientId: appRegistration.outputs.appId
+    openIdIssuer: issuer
+    unauthenticatedClientAction: 'AllowAnonymous'
   }
 }
 
@@ -262,7 +309,7 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.11.1' = {
     enableRbacAuthorization: false
     accessPolicies: [
       {
-        objectId: principalId
+        objectId: appRegistration.outputs.appId
         permissions: {
           secrets: [ 'get', 'list' ]
         }
@@ -273,11 +320,19 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.11.1' = {
           secrets: [ 'get', 'list' ]
         }
       }
+      {
+        objectId: easyauthWebappIdentity.outputs.principalId
+        permissions: {
+          secrets: [ 'get', 'list' ]
+        }
+      }
     ]
     secrets: [
     ]
   }
 }
+
+output AZURE_PRINCIPAL_ID string = appRegistration.outputs.appId
 
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
 output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.uri
