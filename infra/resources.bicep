@@ -47,7 +47,6 @@ module storageAccount 'br/public:avm/res/storage/storage-account:0.15.0' = {
     location: location
     tags: tags
     skuName: 'Standard_LRS'
-    allowBlobPublicAccess: false
     blobServices: {
       containers: [
         {
@@ -95,6 +94,15 @@ module easyauthContainerappIdentity 'br/public:avm/res/managed-identity/user-ass
   params: {
     name: '${abbrs.managedIdentityUserAssignedIdentities}easyauthContainerapp-${resourceToken}'
     location: location
+  }
+}
+
+module easyauthContainerappIdentityRoleAssignment './modules/role-assignment.bicep' = {
+  name: 'easyauthContainerappIdentityRoleAssignment'
+  params: {
+    managedIdentityName: easyauthContainerappIdentity.outputs.name
+    storageAccountName: storageAccount.outputs.name
+    principalType: 'ServicePrincipal'
   }
 }
 
